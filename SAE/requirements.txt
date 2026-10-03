@@ -1,0 +1,6 @@
+streamlit
+stmol
+py3Dmol
+ipython_genutils
+ipywidgets==7.6.3
+ipyspeck==0.6.1
