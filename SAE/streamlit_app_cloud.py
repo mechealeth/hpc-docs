@@ -10,10 +10,15 @@ Deploy: push this file + precomputed_dataset.json to a GitHub repo, then
 connect that repo at https://share.streamlit.io (free tier).
 """
 
-import json
+import json, os
 import streamlit as st
 import py3Dmol
 from stmol import showmol
+
+# Resolve relative to THIS SCRIPT'S folder, not the process's current
+# working directory -- Streamlit Cloud's cwd doesn't necessarily match
+# where the script file lives, which is what caused the FileNotFoundError.
+DATA_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "precomputed_dataset.json")
 
 st.set_page_config(page_title="SAE Feature Activation Explorer", layout="wide")
 
@@ -35,7 +40,11 @@ def load_bundle(path):
 st.title("SAE Feature Activation Explorer")
 st.caption("Precomputed, self-contained -- no live HPC connection needed.")
 
-bundle = load_bundle("precomputed_dataset.json")
+if not os.path.exists(DATA_PATH):
+    st.error(f"precomputed_dataset.json not found at {DATA_PATH} -- "
+            f"make sure it's uploaded in the SAME folder as this script in your repo.")
+    st.stop()
+bundle = load_bundle(DATA_PATH)
 st.write(f"Domain: **{bundle['domain']}** -- target feature **{bundle['target_feature']}**, "
         f"binder feature **{bundle['binder_feature']}**")
 
